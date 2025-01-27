@@ -1,3 +1,4 @@
+#from pygame.examples.video import answer
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, CallbackQueryHandler, CommandHandler
 
 from gpt import *
@@ -19,7 +20,12 @@ async def gpt(update,context):
     await send_text(update,context, text)
 
 async def gpt_dialog(update,context):
-    await send_text(update,context, 'Вы общаетесь с чатом GPT')
+    text=update.message.text #человек в чат написал сообщение
+    prompt=load_prompt('gpt')
+    # мы пересылаем это чату GPT, ждем ответ с помощью await
+    answer=await chatgpt.send_question(prompt,text)
+    # ответ берем и присылаем человеку как ответ чата gpt
+    await send_text(update,context, answer)
 
 
 
