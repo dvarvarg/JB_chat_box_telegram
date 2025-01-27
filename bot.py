@@ -12,6 +12,18 @@ async def start(update,context):
     await send_photo(update,context,'main')
     await send_text(update,context, text)
 
+    # ассинхр ф-ция
+    await show_main_menu(update,context,{
+        'start':'главное меню бота',
+        'profile': 'генерация Tinder-профиля 😎',
+        'opener': 'сообщение для знакомства 🥰',
+        'message': 'переписка от вашего имени 😈',
+        'date': 'переписка со звездами 🔥',
+        'gpt': 'задать вопрос чату GPT 🧠'
+
+    })
+
+
 
 async def gpt(update,context):
     dialog.mode='gpt'
