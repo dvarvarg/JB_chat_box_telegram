@@ -59,9 +59,9 @@ async def date_dialog(updade, context):
 async def date_button(update,context):
     query=update.callback_query.data
     await update.callback_query.answer()
-    await send_photo(update,context,'date_grande')
+    await send_photo(update,context,query)
 
-    await send_text(update,context,'Кликнул по кнопке'+query, parse_mode=ParseMode.HTML)
+    await send_text(update,context,'Отличный выбор! Пригласите девушку (парня) на свидание за 5 сообщений. ')
 
 
 async def hello(update,context):
