@@ -1,4 +1,5 @@
 #from pygame.examples.video import answer
+#from pygame.display import update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, CallbackQueryHandler, CommandHandler
 
 from gpt import *
@@ -39,8 +40,11 @@ async def gpt_dialog(update,context):
     await send_text(update,context, answer)
 
 
+# переводим диалог в режим дейтинга
 async def date(update,context):
     dialog.mode='date'
+    # читаем заготовленный текст и отображаем картинку и список кнопок
+    # при клике на кнопку вкл обработчик date_button
     text=load_message('date')
     await send_photo(update,context,'date')
     await send_text_buttons(update,context, text, {
@@ -52,21 +56,32 @@ async def date(update,context):
     })
 
 
-async def date_dialog(updade, context):
-    pass
+async def date_dialog(update, context):
+    text=update.message.text
+    my_message=await send_text(update,context,'Девушка/парень набирает текст...')
+    answer =await chatgpt.add_message(text)
+    await my_message.edit_text(answer)
+    # await send_text(update,context, answer)
 
 
 async def date_button(update,context):
     query=update.callback_query.data
     await update.callback_query.answer()
-    await send_photo(update,context,query)
 
+    # передаем подготовленную картинку с таким же именем и текст
+    await send_photo(update,context,query)
     await send_text(update,context,'Отличный выбор! Пригласите девушку (парня) на свидание за 5 сообщений. ')
+
+    #загружаем prompt и передаем его чату gpt
+    prompt=load_prompt(query)
+    chatgpt.set_prompt(prompt)
 
 
 async def hello(update,context):
     if dialog.mode=='gpt':
         await gpt_dialog(update,context)
+    if dialog.mode == 'date':
+        await date_dialog(update, context)
     else:
         await send_text(update,context, '*Привет*')
         await send_text(update,context, '_Как дела?_')
