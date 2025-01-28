@@ -77,6 +77,19 @@ async def date_button(update,context):
     chatgpt.set_prompt(prompt)
 
 
+async def message(update,context):
+    pass
+
+
+async def message_dialog(update,context):
+    pass
+
+
+async def message_button(update,context):
+    pass
+
+
+
 async def hello(update,context):
     if dialog.mode=='gpt':
         await gpt_dialog(update,context)
