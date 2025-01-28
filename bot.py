@@ -86,8 +86,12 @@ async def message(update,context):
     })
     dialog.list.clear()
 
-
 async def message_dialog(update,context):
+    text=update.message.text
+    dialog.list.append(text)
+
+
+async def message_button(update,context):
     query=update.callback_query.data
     await update.callback_query.answer()
 
@@ -98,9 +102,7 @@ async def message_dialog(update,context):
     await my_message.edit_text(answer)
 
 
-async def message_button(update,context):
-    text=update.message.text
-    dialog.list.append(text)
+
 
 
 async def hello(update,context):
