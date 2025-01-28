@@ -20,9 +20,7 @@ async def start(update,context):
         'message': 'переписка от вашего имени 😈',
         'date': 'переписка со звездами 🔥',
         'gpt': 'задать вопрос чату GPT 🧠'
-
     })
-
 
 
 async def gpt(update,context):
@@ -30,6 +28,7 @@ async def gpt(update,context):
     text=load_message('gpt')
     await send_photo(update,context,'gpt')
     await send_text(update,context, text)
+
 
 async def gpt_dialog(update,context):
     text=update.message.text #человек в чат написал сообщение
@@ -39,6 +38,30 @@ async def gpt_dialog(update,context):
     # ответ берем и присылаем человеку как ответ чата gpt
     await send_text(update,context, answer)
 
+
+async def date(update,context):
+    dialog.mode='date'
+    text=load_message('date')
+    await send_photo(update,context,'date')
+    await send_text_buttons(update,context, text, {
+        'date_grande':'Ариана Гранде',
+        'date_robbie': 'Марго Робби',
+        'date_zendaya': 'Зендея',
+        'date_gosling': 'Райан Гослинг',
+        'date_hardy': 'Том Харди',
+    })
+
+
+async def date_dialog(updade, context):
+    pass
+
+
+async def date_button(update,context):
+    query=update.callback_query.data
+    await update.callback_query.answer()
+    await send_photo(update,context,'date_grande')
+
+    await send_text(update,context,'Кликнул по кнопке'+query, parse_mode=ParseMode.HTML)
 
 
 async def hello(update,context):
@@ -63,15 +86,22 @@ async def hello_button(update,context):
     else:
         await send_text(update, context, 'Процесс остановлен')
 
+
 dialog=Dialog()
 dialog.mode=None
 
 chatgpt=ChatGptService(token='gpt:IMAtcJ134WVIxVeFe7I2JFkblB3TH88zgyZ5JYpVQKKxZnKk')
 
-
 app = ApplicationBuilder().token("7830540338:AAEB2Ed9CKCKgrr1tDA4wXsMiERXrCHg1o8").build()
+# обработчики команд
 app.add_handler(CommandHandler('start',start))
 app.add_handler(CommandHandler('gpt',gpt))
+app.add_handler(CommandHandler('date',date))
+
+# обработчик текстов, что человек пишет в чат
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,hello))
+
+# обработчики кнопок
+app.add_handler(CallbackQueryHandler(date_button, pattern='^date_.*'))
 app.add_handler(CallbackQueryHandler(hello_button))
 app.run_polling()
