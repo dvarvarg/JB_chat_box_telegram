@@ -86,6 +86,7 @@ async def message(update,context):
     })
     dialog.list.clear()
 
+
 async def message_dialog(update,context):
     text=update.message.text
     dialog.list.append(text)
@@ -100,9 +101,6 @@ async def message_button(update,context):
     my_message=await send_text(update,context,'ChatGPT думает над вариантами ответа ...')
     answer=await chatgpt.send_question(prompt,user_chat_history)
     await my_message.edit_text(answer)
-
-
-
 
 
 async def hello(update,context):
