@@ -1,5 +1,3 @@
-#from pygame.examples.video import answer
-#from pygame.display import update
 from telegram.ext import ApplicationBuilder, MessageHandler, filters, CallbackQueryHandler, CommandHandler
 
 from gpt import *
@@ -78,16 +76,31 @@ async def date_button(update,context):
 
 
 async def message(update,context):
-    pass
+    dialog.mode='message'
+    text = load_message('message')
+    await send_photo(update, context, 'message')
+    await send_text_buttons(update, context, text, {
+        'message_next':'Следующее сообщение ',
+        'message_date':'Пригласить на свидание '
+
+    })
+    dialog.list.clear()
 
 
 async def message_dialog(update,context):
-    pass
+    query=update.callback_query.data
+    await update.callback_query.answer()
+
+    prompt=load_prompt(query)
+    user_chat_history='\n\n'.join(dialog.list)
+    my_message=await send_text(update,context,'ChatGPT думает над вариантами ответа ...')
+    answer=await chatgpt.send_question(prompt,user_chat_history)
+    await my_message.edit_text(answer)
 
 
 async def message_button(update,context):
-    pass
-
+    text=update.message.text
+    dialog.list.append(text)
 
 
 async def hello(update,context):
@@ -95,6 +108,8 @@ async def hello(update,context):
         await gpt_dialog(update,context)
     if dialog.mode == 'date':
         await date_dialog(update, context)
+    if dialog.mode == 'message':
+        await message_dialog(update, context)
     else:
         await send_text(update,context, '*Привет*')
         await send_text(update,context, '_Как дела?_')
@@ -117,6 +132,7 @@ async def hello_button(update,context):
 
 dialog=Dialog()
 dialog.mode=None
+dialog.list=[]
 
 chatgpt=ChatGptService(token='gpt:IMAtcJ134WVIxVeFe7I2JFkblB3TH88zgyZ5JYpVQKKxZnKk')
 
@@ -125,11 +141,13 @@ app = ApplicationBuilder().token("7830540338:AAEB2Ed9CKCKgrr1tDA4wXsMiERXrCHg1o8
 app.add_handler(CommandHandler('start',start))
 app.add_handler(CommandHandler('gpt',gpt))
 app.add_handler(CommandHandler('date',date))
+app.add_handler(CommandHandler('message',message))
 
 # обработчик текстов, что человек пишет в чат
 app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND,hello))
 
 # обработчики кнопок
 app.add_handler(CallbackQueryHandler(date_button, pattern='^date_.*'))
+app.add_handler(CallbackQueryHandler(message_button, pattern='^message_.*'))
 app.add_handler(CallbackQueryHandler(hello_button))
 app.run_polling()
