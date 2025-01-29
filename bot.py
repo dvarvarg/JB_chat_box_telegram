@@ -181,13 +181,13 @@ async def opener_dialog(update,context):
 async def hello(update,context):
     if dialog.mode=='gpt':
         await gpt_dialog(update,context)
-    if dialog.mode == 'date':
+    elif dialog.mode == 'date':
         await date_dialog(update, context)
-    if dialog.mode == 'message':
+    elif dialog.mode == 'message':
         await message_dialog(update, context)
-    if dialog.mode == 'profile':
+    elif dialog.mode == 'profile':
         await profile_dialog(update, context)
-    if dialog.mode == 'opener':
+    elif dialog.mode == 'opener':
         await opener_dialog(update, context)
     else:
         await send_text(update,context, '*Привет*')
